@@ -30,6 +30,8 @@
   },
   "type": "module",
   "dependencies": {
+    "dotenv": "^16.0.1",
+    "mongodb": "^4.7.0",
     "node-sass": "^7.0.1"
   }
 }

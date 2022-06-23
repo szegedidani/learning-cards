@@ -1,6 +1,23 @@
+<script context="module">
+    export async function load({ fetch }) {
+        const res = await fetch('http://localhost:3000/api/admin/words');
+        
+        let isConnected = true;
+        if (res.status === 400) isConnected = false;
+
+        return {
+            props: {
+                isConnected
+            }
+        }
+    }
+</script>
+
 <script>
     import Sidebar from "$lib/components/sidebar.svelte";
 
+    export let isConnected;
+    console.log(isConnected);
 </script>
 <div class="container">
     <h1 class="title">Card Game</h1>
