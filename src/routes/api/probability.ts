@@ -1,9 +1,13 @@
 import type { IExercise } from '$lib/models/exercise';
-import words from '/static/words4.json';
 
 let seenCount = 0;
+let words;
 
-export async function get() {
+export async function post({ params, request }) {
+    
+    const body = await request.json();
+    words = body;
+
     seenCount = 0;
     const wordsData: {id: number; score: number}[] = [];
     const idTable = [];

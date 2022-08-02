@@ -1,28 +1,37 @@
+<script context="module">
+    export async function load({ params, fetch }) {
 
+        console.log(params.type);
+        const res = await fetch(`http://localhost:3000/api/game-types/public/get-one/${params.type}`);
+        const { gameType } = await res.json();
+        return {
+            props: {
+                gameType
+            }
+        }
+    }
+</script>
 
 <script>
     // @ts-nocheck
     import Card from "$lib/card.svelte";
-    import { idTable } from "$lib/stores/id-table.store";
     
-    let exercise;
+    export let gameType;
+
+    let exercises;
     (async () => {
-        const response = await fetch('http://localhost:3000/api/probability');
-        const body = await response.json();
-
-        idTable.set(body.idTable);
-
-        const res = await fetch('http://localhost:3000/api/games');
+        const res = await fetch(`http://localhost:3000/api/games/get-game/${gameType.options.count}`);
         let data = await res.json();
-        exercise = data.exercise[0];
+        exercises = data?.exercises;
+        console.log(exercises);
     })();
 
 </script>
 
 <div class="container">
     <h1>Card</h1>
-    {#if exercise}
-        <Card {exercise}/>  
+    {#if exercises}
+        <Card {exercises}/>  
     {/if}
 </div>
 

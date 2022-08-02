@@ -1,13 +1,36 @@
+<script lang="ts" context="module">
+    export async function load({ fetch }) {
+        
+        const res = await fetch('http://localhost:3000/api/game-types/public/get-all');
+        const { gameTypes } = await res.json();
+
+        return {
+            props: {
+                gameTypes
+            }
+        }
+    }
+</script>
+
+<script lang="ts">
+    import type { IGamesType } from "$lib/models/game-type.model";
+
+    export let gameTypes: IGamesType[];
+</script>
+
 <div class="container">
     <h1>Games</h1>
     <div class="games">
-        <div class="game-card">
-            <p>Short game</p>
-            <div class="buttons">
-                <a href="/games/short-game">Start game</a>
-                <a href="/games/configure">Configure</a>
+        {#each gameTypes as gameType}
+            <div class="game-card">
+                <p>{ gameType.name }</p>
+                <p>Count: { gameType.options.count }</p>
+                <div class="buttons">
+                    <a href="/games/{gameType.slug}">Start game</a>
+                    <a href="/games/configure">Configure</a>
+                </div>
             </div>
-        </div>
+        {/each}
     </div>
 </div>
 
