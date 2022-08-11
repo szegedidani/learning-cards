@@ -1,5 +1,5 @@
-<script context="module">
-    export async function load({ fetch }) {
+<script context="module" lang="ts">
+    export async function load({ fetch }: {fetch: any}) {
         const res = await fetch('http://localhost:3000/api/admin/words');
         
         let isConnected = true;
@@ -17,7 +17,6 @@
     import Sidebar from "$lib/components/sidebar.svelte";
 
     export let isConnected;
-    console.log(isConnected);
 </script>
 <div class="container">
     <h1 class="title">Card Game</h1>

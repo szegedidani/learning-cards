@@ -8,7 +8,6 @@ import type { IGamesType } from "$lib/models/game-type.model";
         options,
     });
 
-    console.log(body);
     const res = await fetch(`http://localhost:3000/api/game-types/admin`, {
         method: 'POST',
         headers: {
@@ -30,7 +29,6 @@ import type { IGamesType } from "$lib/models/game-type.model";
         const res = await fetch(`http://localhost:3000/api/game-types/public`)
 
         const data = await res.json();
-        console.log(data.gameTypes);
         allGameTypes = data.gameTypes;
     }
 

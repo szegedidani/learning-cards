@@ -1,30 +1,41 @@
-<script context="module">
-    export async function load({ params, fetch }) {
+<script context="module" lang="ts">
+    export async function load({ params, fetch }: { params: any, fetch: any }) {
 
-        console.log(params.type);
         const res = await fetch(`http://localhost:3000/api/game-types/public/get-one/${params.type}`);
-        const { gameType } = await res.json();
+
+        if (res.ok) {
+            const { gameType } = await res.json();
+            return {
+                props: {
+                    gameType
+                }
+            }
+        }
+
         return {
             props: {
-                gameType
+                gameType: null
             }
         }
     }
 </script>
 
-<script>
-    // @ts-nocheck
+<script lang="ts">
     import Card from "$lib/card.svelte";
+    import type { IExercise } from "$lib/models/exercise";
+    import type { IGamesType } from "$lib/models/game-type.model";
     
-    export let gameType;
+    export let gameType: IGamesType | null;
 
-    let exercises;
-    (async () => {
-        const res = await fetch(`http://localhost:3000/api/games/get-game/${gameType.options.count}`);
-        let data = await res.json();
-        exercises = data?.exercises;
-        console.log(exercises);
-    })();
+    let exercises: IExercise[];
+    if (gameType) {
+        (async () => {
+            const res = await fetch(`http://localhost:3000/api/games/get-game/${gameType.options.count}`);
+            let data = await res.json();
+            exercises = data?.exercises;
+        })();
+    }
+
 
 </script>
 

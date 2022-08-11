@@ -1,12 +1,15 @@
 import clientPromise from "$lib/db";
 
-export async function get({ request, params }) {
+export async function get({ params }: { params: any }) {
     try {
         const dbClient = await clientPromise;
         const db = dbClient.db('vocabulary');
         const collection = db.collection('game-types');
 
+        console.log(params, 'params');
+        if (params.slug === 'favicon.png') throw new Error('Cringe favicon error occured.');
         const gameType = await collection.find({ slug: params.slug}).toArray();
+        // console.log(gameType, 'api');
 
         return {
             status: 200,
@@ -15,10 +18,11 @@ export async function get({ request, params }) {
             }
         }
 
-    } catch (e) {
-        console.error(e);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
         return {
-            status: 400
+            status: 500,
+            message: e?.message
         }
     }
 }

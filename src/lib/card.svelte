@@ -1,19 +1,20 @@
 <script lang="ts">
-    import { selectedExercise, words } from "$lib/stores/game.store";
+    import { anwsers, selectedExercise, words } from "$lib/stores/game.store";
     import { get } from "svelte/store";
     import type { IExercise } from "./models/exercise";
     import { goto } from '$app/navigation'
 
     export let exercises: IExercise[];
+
+    console.log(exercises);
     let exercise = exercises[get(selectedExercise).index];
-    console.log(exercise);
     
     words.update(() => {
         return [...get(words), exercise];
-    }) 
-    console.log(get(words));
+    })
 
     const nextQuestion = () => {
+        input = ''
         const nextIndex = get(selectedExercise).index + 1;
         if (nextIndex < exercises.length ) {
             selectedExercise.set({ index: nextIndex });
@@ -21,27 +22,23 @@
             isCorrect = false;
             anwsered = false;
         } else {
-            goto('.');
+            goto('http://localhost:3000/games/result');
         }
     };
 
     const updateTrackers = () => {
-        const body = JSON.stringify({correct: isCorrect});
-        fetch(`http://localhost:3000/api/games/trackers/${exercise.id}.ts`, {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            cache: 'no-store',
-            body,
-        })
+        
+        const anwseredEx = {
+            id: exercise.id,
+            correct: isCorrect
+        }
+        anwsers.set([...get(anwsers), anwseredEx]);
     };
 
     const updateExercise = () => {
         if (!confirm('Are you sure?')) return;
         const body = JSON.stringify({...exercise, answer: [...exercise.answer, input]});
-        fetch(`http://localhost:3000/api/games/${exercise.id}.ts`, {
+        fetch(`http://localhost:3000/api/games/update/${exercise.id}.ts`, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -59,10 +56,9 @@
     // }
 
     function submitAnwser() {
-        console.log(exercise);
         isCorrect = exercise.answer.map((anwser: string) => anwser.trim().toLowerCase()).includes(input.trim().toLowerCase());
         anwsered = true;
-        // updateTrackers();
+        updateTrackers();
     }
 
     let input = '';

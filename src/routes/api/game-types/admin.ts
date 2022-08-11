@@ -1,15 +1,12 @@
 import clientPromise from "$lib/db";
 import { string_to_slug } from "$lib/slugify";
 
-export async function post({ params, request }) {
+export async function post({ request }: { request: any }) {
 
-    console.log('run');
     try {
         const dbClient = await clientPromise;
         const db = dbClient.db('vocabulary');
         const collection = db.collection('game-types');
-
-        console.log(request);
 
         let body = await request.json();
 

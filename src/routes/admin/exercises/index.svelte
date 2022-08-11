@@ -4,7 +4,7 @@
     const addWord = async () => {
         const body = JSON.stringify({
             question,
-            answer,
+            answer: [answer],
         });
 
         const res = await fetch(`http://localhost:3000/api/exercises/admin`, {

@@ -1,25 +1,36 @@
-import words from '/src/assets/data/words4.json';
-import { writeFile } from 'fs/promises';
+import clientPromise from '$lib/db';
+import type { IExercise } from '$lib/models/exercise';
 
 export async function put({ params, request }: any) {
-    const data = await request.json();
-
-    for (let i = 0; i < words.length; i++) {
-        if (parseInt(params.id) === words[i].id) {
-            words[i].tracker.seen ++;
-            data.correct ? words[i].tracker.correct++ : words[i].tracker.incorrect++;
-            words[i].tracker.lastSeen = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
-            writeFile('src/assets/data/words4.json', JSON.stringify(words));
-            return {
-                body: { data },
-            };
-        }
+    
+    try {
+        const data = await request.json();
+    
+        const dbClient = await clientPromise;
+        const db = dbClient.db('vocabulary');
+        const collection = db.collection('exercise');
+        const exercise = (await collection.find({ id: parseInt(params.id) }).toArray())[0];
+    
+        console.log(exercise);
+        const updatedExercise: Partial<IExercise> = {
+            ...exercise,
+            tracker: {
+                ...exercise.trackers,
+                seen: exercise.tracker.seen++,
+                correct: data.correct ? exercise.tracker.correct++ : exercise.tracker.incorrect++,
+                lastSeen: exercise.tracker.lastSeen = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`
+            }
+        };
+    
+        await collection.findOneAndReplace({ id: params.id }, updatedExercise);
+    
+        return {
+            body: { updatedExercise },
+        };
+        
+    } catch (error) {
+        return {
+            status: 404,
+        };
     }
-
-
-    return {
-        status: 404,
-    };
-
-
 }

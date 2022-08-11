@@ -1,31 +1,41 @@
-import type { IExercise } from "$lib/models/exercise";
-import words from '/src/assets/data/words4.json';
+import clientPromise from "$lib/db";
 
-export async function get({ params, request }) {
+export async function get({ params }: { params: any }) {
 
-    const idTable: any = await findTable();
-
-    const exerciseIds: number[] = [];
-
-    for (let i = 0; i < params.count; i++) {
-        const randomNumber = (min: number, max: number): number => {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
+    try {
+        
+        const idTable: any = await findTable();
+        
+        const exerciseIds: number[] = [];
+        
+        for (let i = 0; i < params.count; i++) {
+            const randomNumber = (min: number, max: number): number => {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            const index = randomNumber(0, idTable?.length);
+            exerciseIds.push(idTable[index]?.id);
         }
-        const index = randomNumber(0, idTable?.length);
-        exerciseIds.push(idTable[index]?.id);
-    }
-
-    const exercises = words.filter((word: IExercise) => exerciseIds.includes(word.id));
-
-    if (exercises?.length) {
+        
+        const dbClient = await clientPromise;
+        const db = dbClient.db('vocabulary');
+        const collection = db.collection('exercise');
+        const exercises = await collection.find({ id: { $in: exerciseIds } }).toArray();
+    
+        if (exercises?.length) {
+            return {
+                body: { exercises }
+            };
+        }
         return {
-            body: { exercises }
+            status: 404
+        };
+        
+    } catch (error) {
+        return {
+            status: 404
         };
     }
 
-    return {
-        status: 404
-    };
 }
 
 async function findTable() {

@@ -1,24 +1,27 @@
-import words from '/src/assets/data/words4.json';
-import { writeFile } from 'fs/promises';
+import clientPromise from '$lib/db';
 
-export async function put({ params, request }) {
-    const data = await request.json();
+export async function put({ params, request }: any) {
 
-    for (let i = 0; i < words.length; i++) {
-        console.log(words[i].id, params.id);
-        if (parseInt(params.id) === words[i].id) {
-            words[i] = data;
-            writeFile('src/assets/data/words4.json', JSON.stringify(words))
-            return {
-                body: { data },
-            };
-        }
+    try {
+        const data = await request.json();
+    
+        const dbClient = await clientPromise;
+        const db = dbClient.db('vocabulary');
+        const collection = db.collection('exercise');
+
+        delete data._id;
+
+        await collection.updateOne({ id: parseInt(params.id) }, { $set: data });
+    
+        return {
+            body: { data },
+        };
+        
+    } catch (error) {
+        console.error(error);
+        return {
+            status: 404,
+        };
     }
-
-
-    return {
-        status: 404,
-    };
-
 
 }
