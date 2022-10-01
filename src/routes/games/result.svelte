@@ -6,7 +6,7 @@ import { get } from "svelte/store";
 
     const updateTrackers = (anwser: { id: number; correct: boolean }) => {
         const body = JSON.stringify({correct: anwser.correct});
-        fetch(`http://localhost:3000/api/games/trackers/${anwser.id}.ts`, {
+        fetch(`http://localhost:3000/api/exercises/public/update-trackers/${anwser.id}.ts`, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',

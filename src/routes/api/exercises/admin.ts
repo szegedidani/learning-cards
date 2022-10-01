@@ -1,6 +1,6 @@
 import clientPromise from "$lib/db";
 
-export async function post({ params, request }) {
+export async function post({ request }: any) {
 
     try {
         const dbClient = await clientPromise;

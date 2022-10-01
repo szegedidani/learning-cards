@@ -6,10 +6,9 @@ export async function get({ params }: { params: any }) {
         const db = dbClient.db('vocabulary');
         const collection = db.collection('game-types');
 
-        console.log(params, 'params');
         if (params.slug === 'favicon.png') throw new Error('Cringe favicon error occured.');
         const gameType = await collection.find({ slug: params.slug}).toArray();
-        // console.log(gameType, 'api');
+
 
         return {
             status: 200,

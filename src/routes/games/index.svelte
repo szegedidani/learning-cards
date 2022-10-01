@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-    export async function load({ fetch }) {
+    export async function load({ fetch }: any) {
         
         const res = await fetch('http://localhost:3000/api/game-types/public/get-all');
         const { gameTypes } = await res.json();

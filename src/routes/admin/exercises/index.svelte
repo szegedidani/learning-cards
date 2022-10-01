@@ -23,7 +23,7 @@
     }
 
     const getAll = async () => {
-        const res = await fetch(`http://localhost:3000/api/exercises/public`)
+        const res = await fetch(`http://localhost:3000/api/exercises/public/get-all`)
 
         const data = await res.json();
         allExercises = data.exercises;

@@ -3,11 +3,17 @@
     import { get } from "svelte/store";
     import type { IExercise } from "./models/exercise";
     import { goto } from '$app/navigation'
+    import { createEventDispatcher } from "svelte";
+
+    const dispatch = createEventDispatcher();
 
     export let exercises: IExercise[];
+    export let selectedIndex: number;
 
-    console.log(exercises);
-    let exercise = exercises[get(selectedExercise).index];
+    let exercise: IExercise;
+    $: {
+        exercise = exercises[selectedIndex - 1];
+    }
     
     words.update(() => {
         return [...get(words), exercise];
@@ -15,30 +21,16 @@
 
     const nextQuestion = () => {
         input = ''
-        const nextIndex = get(selectedExercise).index + 1;
-        if (nextIndex < exercises.length ) {
-            selectedExercise.set({ index: nextIndex });
-            exercise = exercises[get(selectedExercise).index];
-            isCorrect = false;
-            anwsered = false;
-        } else {
-            goto('http://localhost:3000/games/result');
-        }
-    };
+        isCorrect = false;
+        anwsered = false;
 
-    const updateTrackers = () => {
-        
-        const anwseredEx = {
-            id: exercise.id,
-            correct: isCorrect
-        }
-        anwsers.set([...get(anwsers), anwseredEx]);
+        dispatch('nextAnwser');
     };
 
     const updateExercise = () => {
         if (!confirm('Are you sure?')) return;
         const body = JSON.stringify({...exercise, answer: [...exercise.answer, input]});
-        fetch(`http://localhost:3000/api/games/update/${exercise.id}.ts`, {
+        fetch(`http://localhost:3000/api/exercise/public/update-anwser/${exercise.id}.ts`, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -58,7 +50,9 @@
     function submitAnwser() {
         isCorrect = exercise.answer.map((anwser: string) => anwser.trim().toLowerCase()).includes(input.trim().toLowerCase());
         anwsered = true;
-        updateTrackers();
+        dispatch('anwser', {
+            isCorrect
+        })
     }
 
     let input = '';
@@ -69,14 +63,14 @@
 
     {#if !anwsered}
         <div class="card-side question-side">
-            <span>{get(selectedExercise).index + 1}.</span>
+            <span>{selectedIndex}.</span>
             <p class="question">{ exercise.question }</p>
             <input class="text-input" type="text" bind:value={ input }>
             <button class="card-button" type="button" on:click={submitAnwser}>Submit</button>
         </div>
         {:else}
         <div class="card-side anwser-side" class:correct={isCorrect}>
-            <span>{get(selectedExercise).index + 1}.</span>
+            <span>{selectedIndex}.</span>
             <p>User input: { input }</p>
             <p>Correct anwser: { exercise.answer.join(',') }</p>
             {#if !isCorrect}

@@ -21,29 +21,33 @@
 </script>
 
 <script lang="ts">
-    import Card from "$lib/card.svelte";
-    import type { IExercise } from "$lib/models/exercise";
+import { goto } from "$app/navigation";
+
     import type { IGamesType } from "$lib/models/game-type.model";
     
     export let gameType: IGamesType | null;
 
-    let exercises: IExercise[];
-    if (gameType) {
-        (async () => {
-            const res = await fetch(`http://localhost:3000/api/games/get-game/${gameType.options.count}`);
+    let gameId: Promise<number> = (async() => {
+        if (gameType) {
+            const res = await fetch(`http://localhost:3000/api/games/create-game/${gameType.options.count}`);
             let data = await res.json();
-            exercises = data?.exercises;
-        })();
-    }
-
+            let gameId = data?.gameId;
+            return gameId;
+        } else {
+            goto('http://localhost:3000');
+            throw new Error('Game type not found');
+        }
+    })();
 
 </script>
 
 <div class="container">
-    <h1>Card</h1>
-    {#if exercises}
-        <Card {exercises}/>  
-    {/if}
+    {#await gameId}
+        <p>Loading...</p>
+    {:then gameId} 
+        <a href="http://localhost:3000/games/{gameType?.slug}/{gameId}">Start game</a>
+        
+    {/await}
 </div>
 
 <style>

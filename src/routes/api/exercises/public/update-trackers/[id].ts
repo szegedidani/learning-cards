@@ -10,8 +10,7 @@ export async function put({ params, request }: any) {
         const db = dbClient.db('vocabulary');
         const collection = db.collection('exercise');
         const exercise = (await collection.find({ id: parseInt(params.id) }).toArray())[0];
-    
-        console.log(exercise);
+
         const updatedExercise: Partial<IExercise> = {
             ...exercise,
             tracker: {
