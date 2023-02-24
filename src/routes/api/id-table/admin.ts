@@ -1,5 +1,4 @@
 import clientPromise from "$lib/db";
-import { idTable } from './../../../lib/stores/id-table.store';
 
 export async function get() {
     try {

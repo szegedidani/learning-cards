@@ -38,20 +38,11 @@
         selectedIndex = game.selectedExercise;
     }
 
-    // const updateTrackers = () => {
-        
-    //     const anwseredEx = {
-    //         id: exercise.id,
-    //         correct: isCorrect
-    //     }
-    //     anwsers.set([...get(anwsers), anwseredEx]);
-    // };
-
     const updateGame = (isCorrect: boolean) => {
         const anwsers = game.anwsers ? [...game.anwsers, isCorrect] : [ isCorrect ];
         const updatedGame: IGame = {
             ...game,
-            selectedExercise: game.selectedExercise + 1,
+            selectedExercise: game.selectedExercise !== game.exercises.length ? (game.selectedExercise + 1) : 0,
             anwsers
         };
         fetch(`http://localhost:3000/api/games/update-game/${game._id}`, {
@@ -71,10 +62,8 @@
     }
     
     const handleAnwser = (event: CustomEvent) => {
-        console.log('anwser');
-        console.log(event.detail.isCorrect);
         updateGame(event.detail.isCorrect);
-        if (game.selectedExercise === game.exercises.length + 1 ) goto('http://localhost:3000/games/result');
+        if (game.selectedExercise === game.exercises.length ) goto(`http://localhost:3000/games/result/${game._id}`);
     }
 
     const fetchGame = async () => {

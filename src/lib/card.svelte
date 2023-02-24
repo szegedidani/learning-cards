@@ -1,8 +1,5 @@
 <script lang="ts">
-    import { anwsers, selectedExercise, words } from "$lib/stores/game.store";
-    import { get } from "svelte/store";
     import type { IExercise } from "./models/exercise";
-    import { goto } from '$app/navigation'
     import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();
@@ -14,10 +11,6 @@
     $: {
         exercise = exercises[selectedIndex - 1];
     }
-    
-    words.update(() => {
-        return [...get(words), exercise];
-    })
 
     const nextQuestion = () => {
         input = ''
@@ -42,10 +35,6 @@
 
     let anwsered = false;
     let isCorrect = false;
-
-    // const updateAll = () => {
-    //         fetch('scripts/update-all');
-    // }
 
     function submitAnwser() {
         isCorrect = exercise.answer.map((anwser: string) => anwser.trim().toLowerCase()).includes(input.trim().toLowerCase());
