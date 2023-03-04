@@ -1,7 +1,6 @@
 import clientPromise from "$lib/db";
 
 export async function post({ request }: any) {
-
     try {
         const dbClient = await clientPromise;
         const db = dbClient.db('vocabulary');
@@ -13,7 +12,7 @@ export async function post({ request }: any) {
 
         const action = await collection.insertOne(newExercise);
 
-        updateIdTable()
+        if (await updateIdTable() === false) throw new Error("Failed to update id table");
 
         return {
             status: 200,
@@ -30,8 +29,11 @@ export async function post({ request }: any) {
     }
 }
 
-function updateIdTable() {
-    fetch('http://localhost:3000/api/id-table/admin');
+async function updateIdTable() {
+    const res = await fetch('http://localhost:3000/api/id-table/admin');
+
+    if (res.status === 200) return true;
+    return false;
 }
 
 async function getHighestId() {
@@ -41,7 +43,9 @@ async function getHighestId() {
 
     const res = await collection.find().sort({id: -1}).limit(1).toArray();
 
-    if (res) {
+    if (res?.length) {
         return res[0].id
+    } else {
+        return 0
     }
 }

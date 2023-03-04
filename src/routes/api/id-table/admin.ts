@@ -10,7 +10,7 @@ export async function get() {
         const allExercises = await exerciseCollection.find().toArray();
         const body = JSON.stringify(allExercises);
 
-        const res = await fetch('http://localhost:3000/api/probability', {
+        const res = await (await fetch('http://localhost:3000/api/probability', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -18,10 +18,22 @@ export async function get() {
             },
             cache: 'no-store',
             body
-        })
-        const idTable = (await res.json()).idTable;
+        })).json();
 
-        idTableCollection.findOneAndReplace({name: 'id-table'}, { name: 'id-table', table: idTable });
+        if (res.status === 500) throw new Error("Probability script failed!");
+
+        const idTable = res.idTable;
+
+        const count = await idTableCollection.countDocuments({});
+
+        let newTable;
+        if (count === 0) {
+            newTable = await idTableCollection.insertOne({ name: 'id-table', table: idTable });
+        } else {
+            newTable = await idTableCollection.findOneAndReplace({name: 'id-table'}, { name: 'id-table', table: idTable });
+        }
+
+        if (!newTable) throw new Error("Id table update failed");
 
         return {
             status: 200,
@@ -30,7 +42,8 @@ export async function get() {
     } catch (e) {
         console.error(e);
         return {
-            status: 400
+            status: 400,
+            error: e
         }
     }
 }

@@ -8,6 +8,8 @@ export async function get({ params }: { params: any }) {
         const count = params.count;
         const exercises = await getExercises(count);
 
+        if (!exercises) throw new Error('Not enough exercises to create the game!');
+
         const mappedExercises = exercises.map((exercise) => {
             const { exerciseWithoutId } = ((): {_id: ObjectId, exerciseWithoutId: Partial<IExercise>} => {
                 const { _id, ...exerciseWithoutId } = exercise;
@@ -36,8 +38,10 @@ export async function get({ params }: { params: any }) {
         }
         
     } catch (error) {
+        console.log(error);
         return {
-            status: 404
+            status: 404,
+            error
         };
     }
 
@@ -60,14 +64,23 @@ async function getExercises(count: number) {
         const randomNumber = (min: number, max: number): number => {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
-        const index = randomNumber(0, idTable?.length);
+        const index: number = (() => {
+            let index;
+            do {
+                index = randomNumber(0, idTable?.length);
+            } while (exerciseIds.includes(idTable[index]?.id));
+            return index;
+        })() 
+        
         exerciseIds.push(idTable[index]?.id);
     }
+
 
     const dbClient = await clientPromise;
     const db = dbClient.db('vocabulary');
     const collection = db.collection('exercise');
     const exercises = await collection.find({ id: { $in: exerciseIds } }).toArray();
 
-    return exercises;
+    if (exercises?.length >= count) return exercises;
+    return null;
 }

@@ -1,0 +1,21 @@
+version: '3.8'
+
+volumes:
+  data:
+  config:
+
+services:
+  
+  # Database - Mongo DB
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=vocabulary
+    ports:
+      - "27017:27017"
+    volumes:
+      - data:/data/db
+      - config:/data/configdb
+      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro

@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<!-- <script context="module" lang="ts">
     export async function load({ fetch }: {fetch: any}) {
         const res = await fetch('http://localhost:3000/api/admin/words');
         
@@ -11,12 +11,12 @@
             }
         }
     }
-</script>
+</script> -->
 
 <script>
     import Sidebar from "$lib/components/sidebar.svelte";
 
-    export let isConnected;
+    // export let isConnected;
 </script>
 <div class="container">
     <h1 class="title">Card Game</h1>
@@ -32,7 +32,7 @@
     }
 
     .container {
-        background-color: aquamarine;
+        /* background-color: aquamarine; */
         height: 100%;
         min-height: 100vh;
     }

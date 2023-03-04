@@ -1,7 +1,6 @@
 import clientPromise from "$lib/db";
 
 export async function get() {
-    
     try {
         const dbClient = await clientPromise;
         const db = dbClient.db('vocabulary');

@@ -60,8 +60,8 @@ import { goto } from "$app/navigation";
     }
 
     .container {
-        background: rgb(64,176,249);
-        background: linear-gradient(121deg, rgba(64,176,249,1) 0%, rgba(181,158,233,1) 35%, rgba(0,56,69,1) 100%);
+        /* background: rgb(64,176,249);
+        background: linear-gradient(121deg, rgba(64,176,249,1) 0%, rgba(181,158,233,1) 35%, rgba(0,56,69,1) 100%); */
         width: 100%;
         height: 100%;
         position: absolute;

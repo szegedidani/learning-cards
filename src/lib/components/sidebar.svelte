@@ -19,7 +19,6 @@
         top: 0;
         left: 0;
         background-color: white;
-        width: 15%;
         height: calc(100vh - 2rem);
         padding: 3rem;
         box-sizing: border-box;
